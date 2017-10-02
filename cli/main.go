@@ -12,9 +12,8 @@ func main() {
 
 	p := b.Pages[0]
 
-	p.Connect()
-	// p.Navigate("https://9gag.com/fresh")
+	p.Navigate("https://9gag.com/fresh")
 	p.Evaluate("JSON.stringify({test:123})")
 
-	// b.NewPage("https://www.google.com")
+	b.NewPage("")
 }

@@ -8,22 +8,8 @@ type Page struct {
 	ws *WsClient
 }
 
-func (p *Page) Connect() error {
-	if p.ws != nil {
-		return nil
-	}
-
-	ws, err := NewWsClient(p.DebugUrl)
-	if err != nil {
-		return err
-	}
-
-	p.ws = ws
-	return nil
-}
-
 func (p *Page) Navigate(url string) error {
-	p.ws.Send(&Request{
+	p.SendRequest(&Request{
 		Method: "Page.navigate",
 		Params: map[string]interface{}{"url": url},
 	})
@@ -31,9 +17,23 @@ func (p *Page) Navigate(url string) error {
 }
 
 func (p *Page) Evaluate(script string) error {
-	p.ws.Send(&Request{
+	p.SendRequest(&Request{
 		Method: "Runtime.evaluate",
 		Params: map[string]interface{}{"expression": script, "returnByValue": true},
 	})
+	return nil
+}
+
+func (p *Page) SendRequest(req *Request) error {
+	if p.ws == nil {
+		ws, err := NewWsClient(p.DebugUrl)
+		if err != nil {
+			return err
+		}
+
+		p.ws = ws
+	}
+
+	p.ws.Send(req)
 	return nil
 }
